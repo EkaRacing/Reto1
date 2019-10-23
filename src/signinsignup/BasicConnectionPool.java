@@ -14,6 +14,7 @@ public class BasicConnectionPool{
     protected String connectionURL;
     protected String userName;
     protected String password;
+    protected String driverBD;
     /**
      * Construye un pool de conexiones almacenando los datos pasados como parámetros
      * para usarlos al crear las conexiones.
@@ -22,10 +23,11 @@ public class BasicConnectionPool{
      * @param aPassword Contraseña de usuario de la BD para crear la conexión.
      */
     //public
-    BasicConnectionPool(String aConnectionURL, String aUserName, String aPassword){
+    BasicConnectionPool(String aConnectionURL, String aUserName, String aPassword, String aDriver){
 		connectionURL = aConnectionURL;
 		userName = aUserName;
 		password = aPassword;
+                driverBD=aDriver;
 		pool = new Stack();
     } 
 
@@ -40,6 +42,7 @@ public class BasicConnectionPool{
 			return (Connection) pool.pop();
            } 
            else {                
+                        Class.forName(this.driverBD);
 			// Entonces generar una conexion nueva
 			return DriverManager.getConnection(connectionURL, userName, password);
 	   } 

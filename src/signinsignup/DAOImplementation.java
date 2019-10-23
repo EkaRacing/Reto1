@@ -26,91 +26,38 @@ import java.util.logging.Logger;
 public class DAOImplementation implements DAO {
     
     private final     BasicConnectionPool   poolBD;
-    private final     ResourceBundle  configFile;
-    private final     String          driverBD;
-    private final     String          urlBD;
-    private final     String          userBD;
-    private final     String          passwordBD;
-    private final     String          database;
     protected   Logger     logger;
     protected   Connection      conexionBD;
     /**
      * Inicializa las propiedades del DAO
      * @param poolBD El pool de conexiones a utilizar.
-     * @param configFile El archivo de configuración donde están los datos necesarios
-     * para las conexiones a la BD.
      */
-    public DAOImplementation(BasicConnectionPool poolBD,String configFile){
+    public DAOImplementation(BasicConnectionPool poolBD){
 
         this.poolBD=poolBD;
-        this.configFile=ResourceBundle.getBundle(configFile);
-        this.driverBD= this.configFile.getString("Driver");
-        this.urlBD= this.configFile.getString("Conn");
-        this.userBD= this.configFile.getString("DBUser");
-        this.passwordBD= this.configFile.getString("DBPass");
-        this.database= this.configFile.getString("DB");
         //obtenemos un logger
         this.logger=Logger.getLogger("");
         
     }
     /**
      * Obtiene conexión con BD.
-     * @throws DAOException Si existe cualquier error al obtener la conexión.
+     * @throws Exception Si existe cualquier error al obtener la conexión.
      */
     private void connect() throws Exception{
         logger.info("Obteniendo conexión con la BD.");
-        try{
-            //Si hay pool lo usamos
-           if(poolBD!=null){
-               this.conexionBD=poolBD.extractConection();
-           }
-           //Si no creamos una nueva conexión mediante DriverManager
-           else{
-               Class.forName(this.driverBD);
-               this.conexionBD = 
-                    DriverManager.getConnection(urlBD,userBD,passwordBD);        
-           }
-           //por defecto ponemos el autocommit de la conexión a true
-           this.conexionBD.setAutoCommit(true);
-        }catch(SQLException e){
-            logger.severe("Error al crear Conexión con BD."+
-                    "No se puede obtener conexión:"+e.getMessage());
-            throw new DatabaseException("Error al crear Conexión con BD."+
-                           "No se puede obtener conexión:"+e.getMessage());
-            
-        }catch(ClassNotFoundException e){
-            logger.severe("Error al crear Conexión con BD:"+
-                           "No se puede cargar la clase del Driver.");
-            throw new DatabaseException("Error al crear Conexión con BD:"+
-                           "No se puede cargar la clase del Driver.");
-        }
+        
+        this.conexionBD=poolBD.extractConection();
 
     }
     /**
      * Libera conexión con BD. 
-     * @throws DAOException Si existe cualquier error al liberar la conexión.
+     * @throws Exception Si existe cualquier error al liberar la conexión.
      */
     private void disconnect() throws Exception{
        logger.info("Liberando conexión con la BD.");
-       try{
-            //Si hay pool liberamos la conexión hacia el pool
-           if(poolBD!=null){
-               poolBD.liberateConection(conexionBD);
-               this.conexionBD=null;
-           }
-           //Si no cerramos la conexión creada mediante el DriverManager
-           else{
-               this.conexionBD.close();
-               this.conexionBD=null;
-           }
-        }catch(SQLException e){
-            logger.severe("Error al liberar Conexión con BD:\n"+
-                           "SQLERROR="+e.getMessage());
-            throw new DatabaseException("Error al liberar Conexión con BD:\n"+
-                           "SQLERROR="+e.getMessage());
-            
-        }
-        
+       
+       poolBD.liberateConection(conexionBD);
+       this.conexionBD=null;   
     }
     
     
@@ -137,7 +84,7 @@ public class DAOImplementation implements DAO {
                                 this.connect();
 				try {
 					// Get user from database
-					stmt = this.conexionBD.prepareStatement("select * from " + this.database +".USERS where lower(LOGIN) like ?");
+					stmt = this.conexionBD.prepareStatement("select * from reto1.USERS where lower(LOGIN) like ?");
 					stmt.setString(1, user.getLogin().trim().toLowerCase());
 					resultSet = stmt.executeQuery();
 					if (resultSet.next()) {
@@ -150,7 +97,7 @@ public class DAOImplementation implements DAO {
 							//user.setPhoto(resultSet.getBlob("Photo"));
 
 							// Update last access
-							stmt = this.conexionBD.prepareStatement("update " + this.database + ".USERS " + " set LASTACCESS = ? " + " where LOWER(LOGIN) = ?");
+							stmt = this.conexionBD.prepareStatement("update reto1.USERS " + " set LASTACCESS = ? " + " where LOWER(LOGIN) = ?");
 							stmt.setDate(1, Date.valueOf(LocalDate.now()));
 							stmt.setString(2, user.getLogin().trim().toLowerCase());
 							if (stmt.executeUpdate() == 0) {
@@ -220,7 +167,7 @@ public class DAOImplementation implements DAO {
                 this.connect();
 		try {
 			// Check the login and email are not used
-			stmt = this.conexionBD.prepareStatement("select count(*) as loginCount from " + this.database + ".USERS where lower(LOGIN) like ?");
+			stmt = this.conexionBD.prepareStatement("select count(*) as loginCount from reto1.USERS where lower(LOGIN) like ?");
 			stmt.setString(1, user.getLogin().trim().toLowerCase());
 			resultSet = stmt.executeQuery();
 
@@ -228,7 +175,7 @@ public class DAOImplementation implements DAO {
 
 			// If the login exists throw exception else check email
 			if (resultSet.getInt(1) == 0) {
-				stmt = this.conexionBD.prepareStatement("select count(EMAIL) as emailCount from " + this.database + ".USERS where lower(EMAIL) like ?");
+				stmt = this.conexionBD.prepareStatement("select count(EMAIL) as emailCount from reto1.USERS where lower(EMAIL) like ?");
 				stmt.setString(1, user.getEmail().trim().toLowerCase());
 				resultSet = stmt.executeQuery();
 				resultSet.next();
