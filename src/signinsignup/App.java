@@ -28,7 +28,7 @@ public class App {
         String privilege;
         User user=new User();
         
-        DAO dao=new DAOFactory().createDAOImplementation();
+        DAO dao=DAOFactory.createDAOImplementation();
                
         do{
         do{

@@ -34,21 +34,22 @@ public class BasicConnectionPool{
      * @throws SQLException si existe error al obtener la conexión.
      */
    
-    public synchronized Connection extraerConexion()   throws SQLException, Exception{ 
+    public synchronized Connection extractConection()   throws SQLException, Exception{ 
 	// Si el pool no esta vacio, tomar una conexion  
 	   if(!pool.empty()) {
 			return (Connection) pool.pop();
            } 
-           else { 
+           else {                
 			// Entonces generar una conexion nueva
 			return DriverManager.getConnection(connectionURL, userName, password);
 	   } 
     }
     /** Devuelve una conexión al pool de conexiones.
      * @param conn La conexión a liberar.
+     * @throws java.lang.Exception
      */
-    public synchronized void liberarConexion(Connection conn){ 
-	    pool.push(conn);
+    public synchronized void liberateConection(Connection conn) throws Exception{ 
+        pool.push(conn);
     } 
 }
  

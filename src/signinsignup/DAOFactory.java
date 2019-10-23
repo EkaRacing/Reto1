@@ -14,7 +14,7 @@ public class DAOFactory {
     
     static BasicConnectionPool pool= new BasicConnectionPool("jdbc:mysql://localhost:3306/reto1", "root", "ekaitzlejar");
 
-	public synchronized DAO createDAOImplementation() throws DatabaseException{
+	public synchronized static DAO createDAOImplementation() throws DatabaseException{
 		return new DAOImplementation(pool,"config.config");
 	}
 }

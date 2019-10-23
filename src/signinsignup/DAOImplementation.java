@@ -62,7 +62,7 @@ public class DAOImplementation implements DAO {
         try{
             //Si hay pool lo usamos
            if(poolBD!=null){
-               this.conexionBD=poolBD.extraerConexion();
+               this.conexionBD=poolBD.extractConection();
            }
            //Si no creamos una nueva conexión mediante DriverManager
            else{
@@ -95,7 +95,7 @@ public class DAOImplementation implements DAO {
        try{
             //Si hay pool liberamos la conexión hacia el pool
            if(poolBD!=null){
-               poolBD.liberarConexion(conexionBD);
+               poolBD.liberateConection(conexionBD);
                this.conexionBD=null;
            }
            //Si no cerramos la conexión creada mediante el DriverManager
