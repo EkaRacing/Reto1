@@ -7,12 +7,10 @@ import exception.LoginExistingException;
 import exception.LoginNotExistingException;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -98,7 +96,7 @@ public class DAOImplementation implements DAO {
 
 							// Update last access
 							stmt = this.conexionBD.prepareStatement("update reto1.USERS " + " set LASTACCESS = ? " + " where LOWER(LOGIN) = ?");
-							stmt.setDate(1, Date.valueOf(LocalDate.now()));
+                                                        stmt.setDate(1, Date.valueOf(LocalDate.now()));
 							stmt.setString(2, user.getLogin().trim().toLowerCase());
 							if (stmt.executeUpdate() == 0) {
 								logger.log(Level.SEVERE,
